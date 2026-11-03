@@ -1,0 +1,945 @@
+1.Даден е код на модифициран програмски јазик каде функциите се претставени со отворен и затворен таг ("imeFunkcija" и "endimeFunkcija"). Ваша задача е да дефинирате дали даден програмски код е валиден.
+
+Пример валиден код:
+
+func1
+
+func2
+
+endfunc2
+
+func3
+
+endfunc3
+
+endfunc1
+
+Пример невалиден код (испуштен е затворен таг за func3):
+
+func1
+
+func2
+
+endfunc2
+
+func3
+
+endfunc1
+
+Влез: Код со модифициран програмски јазик, каде секој таг е напишан во нов ред. Се внесуваат тагови се додека не се внесе "x".
+Излез: "Valid" - доколку е валиден кодот, "Invalid" - доколку не е валиден кодот.
+For example:
+
+Input	Result
+func1
+func2
+endfunc2
+func3
+endfunc3
+endfunc1
+x
+Valid
+func1
+func2
+endfunc2
+func3
+endfunc1
+x
+Invalid
+
+import java.util.*;
+class SLLNode<E> {
+    protected E element;
+    protected SLLNode<E> succ;
+
+    public SLLNode(E elem, SLLNode<E> succ) {
+        this.element = elem;
+        this.succ = succ;
+    }
+
+    @Override
+    public String toString() {
+        return element.toString();
+    }
+}
+
+interface Stack<E> {
+    // Elementi na stekot se objekti od proizvolen tip.
+    // Metodi za pristap:
+
+    public boolean isEmpty();
+    // Vrakja true ako i samo ako stekot e prazen.
+
+    public E peek();
+    // Go vrakja elementot na vrvot od stekot.
+
+    // Metodi za transformacija:
+    public void clear();
+    // Go prazni stekot.
+
+    public void push(E x);
+    // Go dodava x na vrvot na stekot.
+
+    public E pop();
+    // Go otstranuva i vrakja elementot shto e na vrvot na stekot.
+}
+class ArrayStack<E> implements Stack<E> {
+    private E[] elems; //elems[0...depth-1] se negovite elementi.
+    private int depth; //depth e dlabochinata na stekot
+
+    @SuppressWarnings("unchecked")
+    public ArrayStack(int maxDepth) {
+        // Konstrukcija na nov, prazen stek.
+        elems = (E[]) new Object[maxDepth];
+        depth = 0;
+    }
+
+    public boolean isEmpty() {
+        // Vrakja true ako i samo ako stekot e prazen.
+        return (depth == 0);
+    }
+
+    public E peek() {
+        // Go vrakja elementot na vrvot od stekot.
+        if (depth == 0)
+            throw new NoSuchElementException();
+        return elems[depth - 1];
+    }
+
+    public void clear() {
+        // Go prazni stekot.
+        for (int i = 0; i < depth; i++) elems[i] = null;
+        depth = 0;
+    }
+
+    public void push(E x) {
+        // Go dodava x na vrvot na stekot.
+        elems[depth++] = x;
+    }
+
+    public int size() {
+        // Ja vrakja dolzinata na stack-ot.
+        return depth;
+    }
+
+    public E pop() {
+        // Go otstranuva i vrakja elementot shto e na vrvot na stekot.
+        if (depth == 0)
+            throw new NoSuchElementException();
+        E topmost = elems[--depth];
+        elems[depth] = null;
+        return topmost;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        Stack<String> stack = new ArrayStack<>(1000);
+        boolean valid = true;
+
+        while (true) {
+            String line = sc.nextLine();
+
+            if (line.equals("x")) {
+                break;
+            }
+
+         
+            if (!line.startsWith("end")) {
+                stack.push(line);
+            }
+            
+            else {
+                if (stack.isEmpty()) {
+                    valid = false;
+                    break;
+                }
+
+                String openTag = stack.pop();      
+                String closeTag = line.substring(3); 
+
+                if (!openTag.equals(closeTag)) {
+                    valid = false;
+                    break;
+                }
+            }
+        }
+
+        if (!stack.isEmpty()) {
+            valid = false;
+        }
+
+        if (valid)
+            System.out.println("Valid");
+        else
+            System.out.println("Invalid");
+    }
+}
+
+
+2.Библиотека е посетена од студентите со цел да изнајмат еден или повеќе типови на книги. Дадена книга може да припаѓа на една од трите категории: Наука, Научна фантастика или Историја. Кога библиотеката ќе започне со работа првин се услужени студентите кои чекаат ред за книга од тип Наука, потоа студентите кои чекаат ред за книга од тип научна фантастика и на крај студентите кои чекаат ред за книга од тип Историја.
+Доколку студент чека ред за книги од различен тип, тој чека ред првин во редицата за книга од тип Наука, потоа во редицата за книга од тип Научна фантастика и на крај во редицата за книга од тип Историја (во зависност ако ги бара овие книги за позајмување).
+Влез: Во првата линија е даден број на студенти кои имаат дојдено во библиотеката да позајмат книга. Потоа 4 редици се внесуваат за секој студент, каде првата линија е име на студент, а во останатите 3 редици се внесува дали студентот ќе позајми книга од даден тип (Наука, Научна фантастика и Историја соодветно), каде 1 значи дека има за цел да позајми книга од тој тип, 0 значи дека нема да позајми книга од тој тип.
+
+Пример:
+
+Иван Ивановски
+1
+1
+0
+значи дека студентот Иван Ивановски има за цел да позајми книга од тип Наука и тип Научна фантастика, но не има за цел да позајми книга од тип Историја.
+
+Излез: Испечати го редоследот на студентите по редослед како завршуваат со позајмување на сите книги.
+
+import java.util.*;
+class SLLNode<E> {
+    protected E element;
+    protected SLLNode<E> succ;
+
+    public SLLNode(E elem, SLLNode<E> succ) {
+        this.element = elem;
+        this.succ = succ;
+    }
+
+    @Override
+    public String toString() {
+        return element.toString();
+    }
+}
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * @author Aleksandar
+ */
+// Java Program to check if a queue
+// of first n natural number can
+// be sorted using a stack
+interface Queue<E> {
+    // Elementi na redicata se objekti od proizvolen tip.
+    // Metodi za pristap:
+    public boolean isEmpty();
+    // Vrakja true ako i samo ako redicata e prazena.
+
+    public int size();
+    // Ja vrakja dolzinata na redicata.
+
+    public E peek();
+    // Go vrakja elementot na vrvot t.e. pocetokot od redicata.
+
+    // Metodi za transformacija:
+
+    public void clear();
+    // Ja prazni redicata.
+
+    public void enqueue(E x);
+    // Go dodava x na kraj od redicata.
+
+    public E dequeue();
+    // Go otstranuva i vrakja pochetniot element na redicata.
+}
+
+class ArrayQueue<E> {
+    // Redicata e pretstavena na sledniot nacin:
+    // length go sodrzi brojot na elementi.
+    // Ako length > 0, togash elementite na redicata se zachuvani vo elems[front...rear-1]
+    // Ako rear > front, togash vo  elems[front...maxlength-1] i elems[0...rear-1]
+    E[] elems;
+    int length, front, rear;
+
+    // Konstruktor ...
+
+    @SuppressWarnings("unchecked")
+    public ArrayQueue(int maxlength) {
+        elems = (E[]) new Object[maxlength];
+        clear();
+    }
+
+    public boolean isEmpty() {
+        // Vrakja true ako i samo ako redicata e prazena.
+        return (length == 0);
+    }
+
+    public int size() {
+        // Ja vrakja dolzinata na redicata.
+        return length;
+    }
+
+    public E peek() {
+        // Go vrakja elementot na vrvot t.e. pocetokot od redicata.
+        if (length > 0)
+            return elems[front];
+        else
+            throw new NoSuchElementException();
+    }
+
+    public void clear() {
+        // Ja prazni redicata.
+        length = 0;
+        front = rear = 0;  // arbitrary
+    }
+
+    public void enqueue(E x) {
+        // Go dodava x na kraj od redicata.
+        if (length == elems.length)
+            throw new NoSuchElementException();
+        elems[rear++] = x;
+        if (rear == elems.length) rear = 0;
+        length++;
+    }
+
+    public E dequeue() {
+        // Go otstranuva i vrakja pochetniot element na redicata.
+        if (length > 0) {
+            E frontmost = elems[front];
+            elems[front++] = null;
+            if (front == elems.length) front = 0;
+            length--;
+            return frontmost;
+        } else
+            throw new NoSuchElementException();
+    }
+}
+
+class Student {
+    String ime;
+    int sf;
+    int ist;
+
+    Student(String ime, int sf, int ist) {
+        this.ime = ime;
+        this.sf = sf;
+        this.ist = ist;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = Integer.parseInt(sc.nextLine());
+
+        ArrayQueue<Student> nauka = new ArrayQueue<>(1000);
+        ArrayQueue<Student> sf = new ArrayQueue<>(1000);
+        ArrayQueue<Student> ist = new ArrayQueue<>(1000);
+
+        // INPUT
+        for (int i = 0; i < n; i++) {
+            String ime = sc.nextLine();
+
+            int a = Integer.parseInt(sc.nextLine());
+            int b = Integer.parseInt(sc.nextLine());
+            int c = Integer.parseInt(sc.nextLine());
+
+            Student s = new Student(ime, b, c);
+
+            if (a == 1) nauka.enqueue(s);
+            else if (b == 1)sf.enqueue(s);
+            else if (c == 1) ist.enqueue(s);
+        }
+        while(!nauka.isEmpty()){
+            Student s=nauka.dequeue();
+            if(s.sf==1)sf.enqueue(s);
+            else if (s.ist==1)ist.enqueue(s);
+            else System.out.println(s.ime);
+        }
+        while(!sf.isEmpty()){
+            Student s=sf.dequeue();
+            if(s.ist==1)ist.enqueue(s);
+            else System.out.println(s.ime);
+        }
+        while(!ist.isEmpty()){
+            Student s=ist.dequeue();
+            System.out.println(s.ime);
+        }
+    }
+}
+
+
+
+
+3.Библиотека е посетена од студентите со цел да изнајмат еден или повеќе типови на книги. Дадена книга може да припаѓа на една од трите категории: Наука, Научна фантастика или Историја. Кога библиотеката ќе започне со работа се услужуваат студенти од сите три типа паралелно, но исто така сите три шалтера не одат со иста брзина па услужувањето е со следниот алгоритам (два студента што бараат книга од тип Наука, па секвенцијално еден студент што бара книга од тип Научна фантастика, па секвенцијално два студенат што бараат книга од тип Историја).
+
+Доколку студент чека ред за книги од различен тип, тој чека ред првин во редицата за книга од тип Наука, потоа во редицата за книга од тип Научна фантастика и на крај во редицата за книга од тип Историја (во зависност ако ги бара овие книги за позајмување).
+
+Влез: Во првата линија е даден број на студенти кои имаат дојдено во библиотеката да позајмат книга. Потоа 4 редици се внесуваат за секој студент, каде првата линија е име на студент, а во останатите 3 редици се внесува дали студентот ќе позајми книга од даден тип (Наука, Научна фантастика и Историја соодветно), каде 1 значи дека има за цел да позајми книга од тој тип, 0 значи дека нема да позајми книга од тој тип.
+
+Пример:
+
+Иван Ивановски
+1
+1
+0
+значи дека студентот Иван Ивановски има за цел да позајми книга од тип Наука и тип Научна фантастика, но не има за цел да позајми книга од тип Историја.
+Излез: Испечати го редоследот на студентите по редослед како завршуваат со позајмување на сите книги.
+
+import java.util.*;
+class SLLNode<E> {
+    protected E element;
+    protected SLLNode<E> succ;
+
+    public SLLNode(E elem, SLLNode<E> succ) {
+        this.element = elem;
+        this.succ = succ;
+    }
+
+    @Override
+    public String toString() {
+        return element.toString();
+    }
+}
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * @author Aleksandar
+ */
+// Java Program to check if a queue
+// of first n natural number can
+// be sorted using a stack
+interface Queue<E> {
+    // Elementi na redicata se objekti od proizvolen tip.
+    // Metodi za pristap:
+    public boolean isEmpty();
+    // Vrakja true ako i samo ako redicata e prazena.
+
+    public int size();
+    // Ja vrakja dolzinata na redicata.
+
+    public E peek();
+    // Go vrakja elementot na vrvot t.e. pocetokot od redicata.
+
+    // Metodi za transformacija:
+
+    public void clear();
+    // Ja prazni redicata.
+
+    public void enqueue(E x);
+    // Go dodava x na kraj od redicata.
+
+    public E dequeue();
+    // Go otstranuva i vrakja pochetniot element na redicata.
+}
+
+class ArrayQueue<E> {
+    // Redicata e pretstavena na sledniot nacin:
+    // length go sodrzi brojot na elementi.
+    // Ako length > 0, togash elementite na redicata se zachuvani vo elems[front...rear-1]
+    // Ako rear > front, togash vo  elems[front...maxlength-1] i elems[0...rear-1]
+    E[] elems;
+    int length, front, rear;
+
+    // Konstruktor ...
+
+    @SuppressWarnings("unchecked")
+    public ArrayQueue(int maxlength) {
+        elems = (E[]) new Object[maxlength];
+        clear();
+    }
+
+    public boolean isEmpty() {
+        // Vrakja true ako i samo ako redicata e prazena.
+        return (length == 0);
+    }
+
+    public int size() {
+        // Ja vrakja dolzinata na redicata.
+        return length;
+    }
+
+    public E peek() {
+        // Go vrakja elementot na vrvot t.e. pocetokot od redicata.
+        if (length > 0)
+            return elems[front];
+        else
+            throw new NoSuchElementException();
+    }
+
+    public void clear() {
+        // Ja prazni redicata.
+        length = 0;
+        front = rear = 0;  // arbitrary
+    }
+
+    public void enqueue(E x) {
+        // Go dodava x na kraj od redicata.
+        if (length == elems.length)
+            throw new NoSuchElementException();
+        elems[rear++] = x;
+        if (rear == elems.length) rear = 0;
+        length++;
+    }
+
+    public E dequeue() {
+        // Go otstranuva i vrakja pochetniot element na redicata.
+        if (length > 0) {
+            E frontmost = elems[front];
+            elems[front++] = null;
+            if (front == elems.length) front = 0;
+            length--;
+            return frontmost;
+        } else
+            throw new NoSuchElementException();
+    }
+}
+
+class Student {
+    String ime;
+    boolean sf, istorija;
+
+    public Student(String ime, boolean sf, boolean istorija) {
+        this.ime = ime;
+        this.sf = sf;
+        this.istorija = istorija;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+
+        ArrayQueue<Student> nauka = new ArrayQueue<>(1000);
+        ArrayQueue<Student> sf = new ArrayQueue<>(1000);
+        ArrayQueue<Student> ist = new ArrayQueue<>(1000);
+
+        for (int i = 0; i < n; i++) {
+            sc.nextLine();
+            String ime = sc.nextLine();
+
+            int a = sc.nextInt();
+            int b = sc.nextInt();
+            int c = sc.nextInt();
+
+            Student s = new Student(ime, b == 1, c == 1);
+
+            if (a == 1) nauka.enqueue(s);
+            else if (b == 1) sf.enqueue(s);
+            else if (c == 1) ist.enqueue(s);
+        }
+
+        while (!nauka.isEmpty() || !sf.isEmpty() || !ist.isEmpty()) {
+
+            for (int i = 0; i < 2 && !nauka.isEmpty(); i++) {
+                Student s = nauka.dequeue();
+                if (s.sf) sf.enqueue(s);
+                else if (s.istorija) ist.enqueue(s);
+                else System.out.println(s.ime);
+            }
+
+            if (!sf.isEmpty()) {
+                Student s = sf.dequeue();
+                if (s.istorija) ist.enqueue(s);
+                else System.out.println(s.ime);
+            }
+
+            for (int i = 0; i < 2 && !ist.isEmpty(); i++) {
+                Student s = ist.dequeue();
+                System.out.println(s.ime);
+            }
+        }
+    }
+}
+
+
+
+
+4.Студентска служба е посетена од студентите со цел да приложат/земат документи. Студентот може да приложи документи, да побара да си го земе индексот или пак да побара да си ги земе документите од средно. Кога студентската служба ќе започне со работа се услужуваат студенти од сите три типа паралелно, но исто така сите три шалтера не одат со иста брзина па услужувањето е со следниот алгоритам (еден студент што приложува документи, па секвенцијално еден студент што сака да си го земе индексот, па секвенцијално еден студент што сака да си ги земе документите од средно).
+
+Доколку студент чека ред за повеќе услуги кај студентската служба, тој чека ред првин во редицата за приложување на документи, потоа во редицата за земање на индекс и на крај во редицата за земање на документи од средно.
+
+Влез: Во првата линија е даден број на студенти кои имаат дојдено за да бидат услужени од студентската служба. Потоа 4 редици се внесуваат за секој студент, каде првата линија е име на студент, а во останатите 3 редици се внесува дали има потреба од дадена услуга (приложување документи, земање на индекс, земање на документи од средно соодветно), каде 1 значи дека има потреба од услуга од тој тип, 0 значи дека нема потреба од услуга од тој тип.
+
+Пример:
+
+Иван Ивановски
+1
+1
+0
+значи дека студентот Иван Ивановски има за цел да приложи документи и да си го земе индексот.
+Излез: Испечати го редоследот на студентите по редослед како завршуваат со сите услуги од студенстката служба.
+
+
+import java.util.*;
+class SLLNode<E> {
+    protected E element;
+    protected SLLNode<E> succ;
+
+    public SLLNode(E elem, SLLNode<E> succ) {
+        this.element = elem;
+        this.succ = succ;
+    }
+
+    @Override
+    public String toString() {
+        return element.toString();
+    }
+}
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * @author Aleksandar
+ */
+// Java Program to check if a queue
+// of first n natural number can
+// be sorted using a stack
+interface Queue<E> {
+    // Elementi na redicata se objekti od proizvolen tip.
+    // Metodi za pristap:
+    public boolean isEmpty();
+    // Vrakja true ako i samo ako redicata e prazena.
+
+    public int size();
+    // Ja vrakja dolzinata na redicata.
+
+    public E peek();
+    // Go vrakja elementot na vrvot t.e. pocetokot od redicata.
+
+    // Metodi za transformacija:
+
+    public void clear();
+    // Ja prazni redicata.
+
+    public void enqueue(E x);
+    // Go dodava x na kraj od redicata.
+
+    public E dequeue();
+    // Go otstranuva i vrakja pochetniot element na redicata.
+}
+
+class ArrayQueue<E> {
+    // Redicata e pretstavena na sledniot nacin:
+    // length go sodrzi brojot na elementi.
+    // Ako length > 0, togash elementite na redicata se zachuvani vo elems[front...rear-1]
+    // Ako rear > front, togash vo  elems[front...maxlength-1] i elems[0...rear-1]
+    E[] elems;
+    int length, front, rear;
+
+    // Konstruktor ...
+
+    @SuppressWarnings("unchecked")
+    public ArrayQueue(int maxlength) {
+        elems = (E[]) new Object[maxlength];
+        clear();
+    }
+
+    public boolean isEmpty() {
+        // Vrakja true ako i samo ako redicata e prazena.
+        return (length == 0);
+    }
+
+    public int size() {
+        // Ja vrakja dolzinata na redicata.
+        return length;
+    }
+
+    public E peek() {
+        // Go vrakja elementot na vrvot t.e. pocetokot od redicata.
+        if (length > 0)
+            return elems[front];
+        else
+            throw new NoSuchElementException();
+    }
+
+    public void clear() {
+        // Ja prazni redicata.
+        length = 0;
+        front = rear = 0;  // arbitrary
+    }
+
+    public void enqueue(E x) {
+        // Go dodava x na kraj od redicata.
+        if (length == elems.length)
+            throw new NoSuchElementException();
+        elems[rear++] = x;
+        if (rear == elems.length) rear = 0;
+        length++;
+    }
+
+    public E dequeue() {
+        // Go otstranuva i vrakja pochetniot element na redicata.
+        if (length > 0) {
+            E frontmost = elems[front];
+            elems[front++] = null;
+            if (front == elems.length) front = 0;
+            length--;
+            return frontmost;
+        } else
+            throw new NoSuchElementException();
+    }
+}
+
+class Student {
+    String ime;
+    int doc, ind, med;
+
+    public Student(String ime, int doc, int ind, int med) {
+        this.ime = ime;
+        this.doc = doc;
+        this.ind = ind;
+        this.med = med;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+
+        ArrayQueue<Student> doc = new ArrayQueue<>(1000);
+        ArrayQueue<Student> ind = new ArrayQueue<>(1000);
+        ArrayQueue<Student> med = new ArrayQueue<>(1000);
+
+        for (int i = 0; i < n; i++) {
+            sc.nextLine();
+            String ime = sc.nextLine();
+
+            int d = sc.nextInt();
+            int i1 = sc.nextInt();
+            int m = sc.nextInt();
+
+            Student s = new Student(ime, d, i1, m);
+
+            if (d == 1) doc.enqueue(s);
+            else if (i1 == 1) ind.enqueue(s);
+            else if (m == 1) med.enqueue(s);
+        }
+
+        while (!doc.isEmpty() || !ind.isEmpty() || !med.isEmpty()) {
+
+            if (!doc.isEmpty()) {
+                Student s = doc.dequeue();
+                if (s.ind == 1) ind.enqueue(s);
+                else if (s.med == 1) med.enqueue(s);
+                else System.out.println(s.ime);
+            }
+
+            if (!ind.isEmpty()) {
+                Student s = ind.dequeue();
+                if (s.med == 1) med.enqueue(s);
+                else System.out.println(s.ime);
+            }
+
+            if (!med.isEmpty()) {
+                Student s = med.dequeue();
+                System.out.println(s.ime);
+            }
+        }
+    }
+}
+
+
+
+
+
+5.Студентска служба е посетена од студентите со цел да приложат/земат документи. Студентот може да приложи документи, да побара да си го земе индексот или пак да побара да си ги земе документите од средно. Кога студентската служба ќе започне со работа се услужуваат студенти од сите три типа паралелно, но исто така сите три шалтера не одат со иста брзина па услужувањето е со следниот алгоритам (два студента што ги приложуваат документите, па секвенцијално три студенти што сакаат да си го земат индексот, па секвенцијално еден студент што сака да си ги земе документите од средно).
+
+Доколку студент чека ред за повеќе услуги кај студентската служба, тој чека ред првин во редицата за приложување на документи, потоа во редицата за земање на индекс и на крај во редицата за земање на документи од средно.
+
+Влез: Во првата линија е даден број на студенти кои имаат дојдено за да бидат услужени од студентската служба. Потоа 4 редици се внесуваат за секој студент, каде првата линија е име на студент, а во останатите 3 редици се внесува дали има потреба од дадена услуга (приложување документи, земање на индекс, земање на документи од средно соодветно), каде 1 значи дека има потреба од услуга од тој тип, 0 значи дека нема потреба од услуга од тој тип.
+
+Пример:
+
+Иван Ивановски
+1
+1
+0
+значи дека студентот Иван Ивановски има за цел да приложи документи и да си го земе индексот.
+Излез: Испечати го редоследот на студентите по редослед како завршуваат со сите услуги од студенстката служба.
+
+
+import java.util.*;
+class SLLNode<E> {
+    protected E element;
+    protected SLLNode<E> succ;
+
+    public SLLNode(E elem, SLLNode<E> succ) {
+        this.element = elem;
+        this.succ = succ;
+    }
+
+    @Override
+    public String toString() {
+        return element.toString();
+    }
+}
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * @author Aleksandar
+ */
+// Java Program to check if a queue
+// of first n natural number can
+// be sorted using a stack
+interface Queue<E> {
+    // Elementi na redicata se objekti od proizvolen tip.
+    // Metodi za pristap:
+    public boolean isEmpty();
+    // Vrakja true ako i samo ako redicata e prazena.
+
+    public int size();
+    // Ja vrakja dolzinata na redicata.
+
+    public E peek();
+    // Go vrakja elementot na vrvot t.e. pocetokot od redicata.
+
+    // Metodi za transformacija:
+
+    public void clear();
+    // Ja prazni redicata.
+
+    public void enqueue(E x);
+    // Go dodava x na kraj od redicata.
+
+    public E dequeue();
+    // Go otstranuva i vrakja pochetniot element na redicata.
+}
+
+class ArrayQueue<E> {
+    // Redicata e pretstavena na sledniot nacin:
+    // length go sodrzi brojot na elementi.
+    // Ako length > 0, togash elementite na redicata se zachuvani vo elems[front...rear-1]
+    // Ako rear > front, togash vo  elems[front...maxlength-1] i elems[0...rear-1]
+    E[] elems;
+    int length, front, rear;
+
+    // Konstruktor ...
+
+    @SuppressWarnings("unchecked")
+    public ArrayQueue(int maxlength) {
+        elems = (E[]) new Object[maxlength];
+        clear();
+    }
+
+    public boolean isEmpty() {
+        // Vrakja true ako i samo ako redicata e prazena.
+        return (length == 0);
+    }
+
+    public int size() {
+        // Ja vrakja dolzinata na redicata.
+        return length;
+    }
+
+    public E peek() {
+        // Go vrakja elementot na vrvot t.e. pocetokot od redicata.
+        if (length > 0)
+            return elems[front];
+        else
+            throw new NoSuchElementException();
+    }
+
+    public void clear() {
+        // Ja prazni redicata.
+        length = 0;
+        front = rear = 0;  // arbitrary
+    }
+
+    public void enqueue(E x) {
+        // Go dodava x na kraj od redicata.
+        if (length == elems.length)
+            throw new NoSuchElementException();
+        elems[rear++] = x;
+        if (rear == elems.length) rear = 0;
+        length++;
+    }
+
+    public E dequeue() {
+        // Go otstranuva i vrakja pochetniot element na redicata.
+        if (length > 0) {
+            E frontmost = elems[front];
+            elems[front++] = null;
+            if (front == elems.length) front = 0;
+            length--;
+            return frontmost;
+        } else
+            throw new NoSuchElementException();
+    }
+}
+
+class Student {
+    String ime;
+    int doc, ind, med;
+
+    public Student(String ime, int doc, int ind, int med) {
+        this.ime = ime;
+        this.doc = doc;
+        this.ind = ind;
+        this.med = med;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+
+        ArrayQueue<Student> doc = new ArrayQueue<>(1000);
+        ArrayQueue<Student> ind = new ArrayQueue<>(1000);
+        ArrayQueue<Student> med = new ArrayQueue<>(1000);
+
+        for (int i = 0; i < n; i++) {
+            sc.nextLine();
+            String ime = sc.nextLine();
+
+            int d = sc.nextInt();
+            int i1 = sc.nextInt();
+            int m = sc.nextInt();
+
+            Student s = new Student(ime, d, i1, m);
+
+            if (d == 1) doc.enqueue(s);
+            else if (i1 == 1) ind.enqueue(s);
+            else if (m == 1) med.enqueue(s);
+        }
+
+        while (!doc.isEmpty() || !ind.isEmpty() || !med.isEmpty()) {
+
+            for (int i = 0; i < 2 && !doc.isEmpty(); i++) {
+                Student s = doc.dequeue();
+
+                if (s.ind == 1) ind.enqueue(s);
+                else if (s.med == 1) med.enqueue(s);
+                else System.out.println(s.ime);
+            }
+
+            for (int i = 0; i < 3 && !ind.isEmpty(); i++) {
+                Student s = ind.dequeue();
+
+                if (s.med == 1) med.enqueue(s);
+                else System.out.println(s.ime);
+            }
+
+            if (!med.isEmpty()) {
+                Student s = med.dequeue();
+                System.out.println(s.ime);
+            }
+        }
+    }
+}
+
+
+
