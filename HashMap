@@ -1,0 +1,780 @@
+1.Во оваа задача ќе работите со два објекти „Вработени“ и „Проекти“.
+Еден вработен е дефиниран со 2 вредности: Име (String), Возраст (цел број).
+Еден проект е дефиниран со 2 вредности: Работно Време (цел број), Плата по час (цел број).
+За даден проект вкупната плата се пресметува како производ на работното време и платата по час.
+Вработените ќе добиваат понудени проекти, и треба да го изберат проектот од кој ќе добијат најголема плата (доколку имаат избор од повеќе проекти со иста најголема плата, тогаш првиот таков).
+Ваша задача ќе биде да им помогнете на вработените со тоа што ќе искористите CBHT со 10 кофички каде што за секој вработен ќе ја чувате неговата најдобра понуда.
+За хеш функција користете производ од возраста на вработениот и ASCII вредноста на првата буква од името на вработениот.
+
+Влез:
+Во првиот ред е даден еден цел број N кој го означува бројот на понуди. Потоа во следните N редови се дадени по 4 вредности, информациите за понудите, името и возраста на вработениот и работното време и платата од час на проектот соодветно:
+N
+name_1 age_1 time_1 rate_1
+name_2 age_2 time_2 rate_2
+...
+name_N age_N time_N rate_N
+Излез:
+
+Отпечатете ја целата табела (со готовиот toString метод).
+Секој вработен да се печати во формат "<name, age>" каде на местото на name и age треба да стои името и возраста на вработениот соодветно (имплементирајте го ова во toString метод)
+Секој проект да се печати во формат "<time, rate>" каде на местото на time и rate треба да стои работното време и платата по час на проектот соодветно (имплементирајте го ова во toString метод)
+
+import java.util.*;
+
+class Employee {
+    String name;
+    int age;
+
+    Employee(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    @Override
+    public String toString() {
+        return "<" + name + ", " + age + ">";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Employee)) return false;
+        Employee e = (Employee) o;
+        return age == e.age && name.equals(e.name);
+    }
+
+    @Override
+    public int hashCode() {
+        // За CBHT можеш и да го оставиш, ние користиме наша хеш функција
+        return age * name.charAt(0);
+    }
+}
+
+class Project {
+    int time;
+    int rate;
+
+    Project(int time, int rate) {
+        this.time = time;
+        this.rate = rate;
+    }
+
+    int totalSalary() {
+        return time * rate;
+    }
+
+    @Override
+    public String toString() {
+        return "<" + time + ", " + rate + ">";
+    }
+}
+
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int N = sc.nextInt();
+
+        CBHT<Employee, Project> table = new CBHT<>(10); // 10 кофички
+
+        for (int i = 0; i < N; i++) {
+            String name = sc.next();
+            int age = sc.nextInt();
+            int time = sc.nextInt();
+            int rate = sc.nextInt();
+
+            Employee e = new Employee(name, age);
+            Project p = new Project(time, rate);
+
+            
+            SLLNode<MapEntry<Employee, Project>> existing = table.search(e);
+            if (existing == null) {
+                table.insert(e, p);
+            } else {
+               
+                if (p.totalSalary() > existing.element.value.totalSalary()) {
+                    table.insert(e, p);
+                }
+            }
+        }
+
+       
+        System.out.println(table.toString());
+    }
+}
+
+
+2.На влез во оваа задача ќе ви бидат дадени редови како следниот формат:
+Ime Prezime budzhet ip_adresa vreme grad cena
+Пример
+Jovan Todorov 1000 10.73.112.200 15:30 Bitola 760
+Кое што значи дека лицето со Име и Презиме Jovan Todorov, има буџет од 1000 денари, има IP адреса со мрежа 10.73.112 и домаќин (host number) 200, и се приклучил во 15:30 часот за да купи билет кон Bitola кој што чини 760 денари.
+
+Ќе ви бидат дадени N такви редови, по што ќе следи празен ред па уште M редови од истиот формат, кои ќе ги користиме за тестирање.
+
+Од редот за тестирање треба да го извадите градот и потоа да го одговорите следното прашање со овој град:
+
+Од сите N лица на влез, кои купуваат билет за до истиот град
+колку од нив имале доволно буџет за да го купат билетот; и
+од овие, кој од нив платил најголем износ?
+(погледнете го тест примерот!)
+(доколку има повеќе со ист најголем износ тогаш кој е првиот таков во влезот?) (секогаш ќе постои барем еден таков)
+Ова ќе треба да го направите за сите M редови за тестирање!
+
+
+// Следните класи веќе се импортирани, не е дозволено копирање на класи овде, директно користејте ги како кога се достапни во други локални фајлови:
+// The following classes are already imported, copying classes here is not allowed, use them directly as when they are available in other local files:
+
+// CBHT, OBHT, MapEntry, SLLNode веќе се импортирани
+// CBHT, OBHT, MapEntry, SLLNode are already imported
+import java.util.*;
+
+class Person {
+    String ime;
+    String prezime;
+    int budzhet;
+    String ip;
+    int cena;
+
+    Person(String ime, String prezime, int budzhet, String ip, int cena) {
+        this.ime = ime;
+        this.prezime = prezime;
+        this.budzhet = budzhet;
+        this.ip = ip;
+        this.cena = cena;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int N = sc.nextInt();
+        sc.nextLine();
+
+        HashMap<String, ArrayList<Person>> map = new HashMap<>();
+
+       
+        for (int i = 0; i < N; i++) {
+            String ime = sc.next();
+            String prezime = sc.next();
+            int budzhet = sc.nextInt();
+            String ip = sc.next();
+            String vreme = sc.next();
+            String grad = sc.next();
+            int cena = sc.nextInt();
+
+            Person p = new Person(ime, prezime, budzhet, ip, cena);
+
+            map.putIfAbsent(grad, new ArrayList<>());
+            map.get(grad).add(p);
+        }
+
+        int M = sc.nextInt();
+        sc.nextLine();
+
+    
+        for (int i = 0; i < M; i++) {
+            String ime = sc.next();
+            String prezime = sc.next();
+            int budzhet = sc.nextInt();
+            String ip = sc.next();
+            String vreme = sc.next();
+            String grad = sc.next();
+            int cena = sc.nextInt();
+
+            ArrayList<Person> lista = map.get(grad);
+
+            int count = 0;
+            Person maxPerson = null;
+            int maxCena = -1;
+
+            for (Person p : lista) {
+                if (p.budzhet >= p.cena) {
+                    count++;
+                    if (p.cena > maxCena) {
+                        maxCena = p.cena;
+                        maxPerson = p;
+                    }
+                }
+            }
+
+            System.out.println("City: " + grad + " has the following number of customers:");
+            System.out.println(count);
+            System.out.println("The user who spent the most purchasing for that city is:");
+            System.out.println(
+                maxPerson.ime + " " + maxPerson.prezime +
+                " with salary " + maxPerson.budzhet +
+                " from address " + maxPerson.ip +
+                " who spent " + maxPerson.cena
+            );
+            System.out.println(" ");
+        }
+    }
+}
+
+
+
+3.На влез во оваа задача ќе ви бидат дадени редови како следниот формат:
+Ime Prezime budzhet ip_adresa vreme grad cena
+Пример
+Jovan Todorov 1000 10.73.112.200 15:30 Bitola 760
+Кое што значи дека лицето со Име и Презиме Jovan Todorov, има буџет од 1000 денари, има IP адреса со мрежа 10.73.112 и домаќин (host number) 200, и се приклучил во 15:30 часот за да купи билет кон Bitola кој што чини 760 денари.
+Ќе ви бидат дадени N такви редови, по што ќе следи празен ред па уште M редови од истиот формат, кои ќе ги користиме за тестирање.
+Од редот за тестирање треба да го извадите градот и потоа да го одговорите следното прашање со овој град:
+Од сите N лица на влез, кои купуваат билет за до истиот град
+колку од нив се вклучиле подоцна од 11:59; и
+од овие, кој од нив се вклучил најрано? 
+(погледнете го тест примерот!)
+(доколку има повеќе со исто најмало време тогаш кој е првиот таков во влезот?) (секогаш ќе постои барем еден таков)
+Ова ќе треба да го направите за сите M редови за тестирање!
+
+
+import java.util.*;
+class Person {
+    String ime;
+    String prezime;
+    int budzhet;
+    String ip;
+    int cena;
+    String vreme;
+
+    Person(){
+        ime="";
+        prezime="";
+        budzhet=0;
+        ip="";
+        cena=0;
+        vreme="";
+    }
+    Person(String ime, String prezime, int budzhet, String ip, int cena,String vreme) {
+        this.ime = ime;
+        this.prezime = prezime;
+        this.budzhet = budzhet;
+        this.ip = ip;
+        this.cena = cena;
+        this.vreme=vreme;
+    }
+}
+
+public class Main {
+    static boolean afterNoon(String line){
+        String []delovi=line.split(":");
+        int h=Integer.parseInt(delovi[0]);
+        int m=Integer.parseInt(delovi[1]);
+        if(h<11 || (h==11 && m<=59)){
+            return false;
+        }
+        return true;
+    }
+    static Person najrano(String n1,String n2,Person eden,Person dva){
+        String prv=n1;
+        String vtor=n2;
+        String []delovi1=n1.split(":");
+        String []delovi2=n2.split(":");
+        int h1=Integer.parseInt(delovi1[0]);
+        int m1=Integer.parseInt(delovi1[1]);
+        int h2=Integer.parseInt(delovi2[0]);
+        int m2=Integer.parseInt(delovi2[1]);
+        if(h1-h2>0){
+            return dva;
+        }
+        else if(h1-h2<0){
+            return eden;
+        }
+        else{
+            if(m1>m2){
+                return dva;
+            }
+            return eden;
+        }
+    }
+    public static void main(String[] args) {
+        Scanner sc=new Scanner(System.in);
+        int n=sc.nextInt();
+        HashMap<String,ArrayList<Person>>map=new HashMap<>();
+        for(int i=0;i<n;i++){
+            String ime=sc.next();
+            String prezime=sc.next();
+            int budzet=sc.nextInt();
+            String ip=sc.next();
+            String vreme=sc.next();
+            String grad=sc.next();
+            int cena=sc.nextInt();
+            Person p=new Person(ime,prezime,budzet,ip,cena,vreme);
+            map.putIfAbsent(grad,new ArrayList<>());
+            map.get(grad).add(p);
+        }
+        int m=sc.nextInt();
+        for(int i=0;i<m;i++){
+            String ime=sc.next();
+            String prezime=sc.next();
+            int budzet=sc.nextInt();
+            String ip=sc.next();
+            String vreme=sc.next();
+            String grad=sc.next();
+            int cena=sc.nextInt();
+            ArrayList<Person>list=map.get(grad);
+            int count=0;
+            String max="";
+            Person maxP=null;
+            for(Person p:list){
+                if(afterNoon(p.vreme)) {
+                    count++;
+                    if (maxP == null) {
+                        maxP = p;
+                    } else {
+                        Person brz = najrano(maxP.vreme, p.vreme, maxP, p);
+                        maxP = brz;
+                    }
+                }
+                }
+
+            System.out.println("City: " + grad + " has the following number of customers:");
+            System.out.println(count);
+            System.out.println("The user who logged on earliest after noon from that city is:");
+            System.out.println(
+                    maxP.ime + " " + maxP.prezime +
+                            " with salary " + maxP.budzhet +
+                            " from address " + maxP.ip +
+                            " who logged in at " + maxP.vreme
+            );
+            System.out.println(" ");
+        }
+    }
+}
+
+
+
+
+
+
+4.На влез во оваа задача ќе ви бидат дадени редови како следниот формат:
+Ime Prezime budzhet ip_adresa vreme grad cena
+Пример
+Jovan Todorov 1000 10.73.112.200 15:30 Bitola 760
+Кое што значи дека лицето со Име и Презиме Jovan Todorov, има буџет од 1000 денари, има IP адреса со мрежа 10.73.112 и домаќин (host number) 200, и се приклучил во 15:30 часот за да купи билет кон Bitola кој што чини 760 денари.
+
+Ќе ви бидат дадени N такви редови, по што ќе следи празен ред па уште M редови од истиот формат, кои ќе ги користиме за тестирање.
+
+Од редот за тестирање треба да ја извадите IP адресата на мрежата и потоа да го одговорите следното прашање со оваа мрежа:
+
+Од сите N лица на влез, кои што се поврзуваат со истата мрежа (од било кој домаќин во мрежата)
+колку од нив се вклучиле подоцна од 11:59; и
+од овие, кој од нив се вклучил најрано? 
+(погледнете го тест примерот!)
+(доколку има повеќе со исто најмало време тогаш кој е првиот таков во влезот?) (секогаш ќе постои барем еден таков)
+Ова ќе треба да го направите за сите M редови за тестирање!
+
+
+import java.util.*;
+class Person {
+    String ime;
+    String prezime;
+    int budzhet;
+    String ip;
+    int cena;
+    String vreme;
+
+    Person(){
+        ime="";
+        prezime="";
+        budzhet=0;
+        ip="";
+        cena=0;
+        vreme="";
+    }
+    Person(String ime, String prezime, int budzhet, String ip, int cena,String vreme) {
+        this.ime = ime;
+        this.prezime = prezime;
+        this.budzhet = budzhet;
+        this.ip = ip;
+        this.cena = cena;
+        this.vreme=vreme;
+    }
+    String getNetwork(){
+        String []network=ip.split("\\.");
+        return network[0]+"."+network[1]+"."+network[2];
+    }
+}
+
+public class Main {
+    static boolean afterNoon(String line){
+        String []delovi=line.split(":");
+        int h=Integer.parseInt(delovi[0]);
+        int m=Integer.parseInt(delovi[1]);
+        if(h<11 || (h==11 && m<=59)){
+            return false;
+        }
+        return true;
+    }
+    static Person najrano(String n1,String n2,Person eden,Person dva){
+        String prv=n1;
+        String vtor=n2;
+        String []delovi1=n1.split(":");
+        String []delovi2=n2.split(":");
+        int h1=Integer.parseInt(delovi1[0]);
+        int m1=Integer.parseInt(delovi1[1]);
+        int h2=Integer.parseInt(delovi2[0]);
+        int m2=Integer.parseInt(delovi2[1]);
+        if(h1-h2>0){
+            return dva;
+        }
+        else if(h1-h2<0){
+            return eden;
+        }
+        else{
+            if(m1>m2){
+                return dva;
+            }
+            return eden;
+        }
+    }
+    public static void main(String[] args) {
+        Scanner sc=new Scanner(System.in);
+        int n=sc.nextInt();
+        HashMap<String,ArrayList<Person>>map=new HashMap<>();
+        for(int i=0;i<n;i++){
+            String ime=sc.next();
+            String prezime=sc.next();
+            int budzet=sc.nextInt();
+            String ip=sc.next();
+            String vreme=sc.next();
+            String grad=sc.next();
+            int cena=sc.nextInt();
+            Person p=new Person(ime,prezime,budzet,ip,cena,vreme);
+            String network=p.getNetwork();
+            map.putIfAbsent(network,new ArrayList<>());
+            map.get(network).add(p);
+        }
+        int m=sc.nextInt();
+        for(int i=0;i<m;i++){
+            String ime=sc.next();
+            String prezime=sc.next();
+            int budzet=sc.nextInt();
+            String ip=sc.next();
+            String vreme=sc.next();
+            String grad=sc.next();
+            int cena=sc.nextInt();
+            String network=ip.substring(0,ip.lastIndexOf("."));
+            ArrayList<Person>list=map.get(network);
+            int count=0;
+            String max="";
+            Person maxP=null;
+            for(Person p:list){
+                if(afterNoon(p.vreme)) {
+                    count++;
+                    if (maxP == null) {
+                        maxP = p;
+                    } else {
+                        Person brz = najrano(maxP.vreme, p.vreme, maxP, p);
+                        maxP = brz;
+                    }
+                }
+                }
+
+            System.out.println("IP network: " + network + " has the following number of users:");
+            System.out.println(count);
+            System.out.println("The user who logged on earliest after noon from that network is:");
+            System.out.println(
+                    maxP.ime + " " + maxP.prezime +
+                            " with salary " + maxP.budzhet +
+                            " from address " + maxP.ip +
+                            " who logged in at " + maxP.vreme
+            );
+            System.out.println(" ");
+        }
+    }
+}
+
+
+
+
+
+
+5.На влез во оваа задача ќе ви бидат дадени редови како следниот формат:
+Ime Prezime budzhet ip_adresa vreme grad cena
+Пример
+Jovan Todorov 1000 10.73.112.200 15:30 Bitola 760
+Кое што значи дека лицето со Име и Презиме Jovan Todorov, има буџет од 1000 денари, има IP адреса со мрежа 10.73.112 и домаќин (host number) 200, и се приклучил во 15:30 часот за да купи билет кон Bitola кој што чини 760 денари.
+Ќе ви бидат дадени N такви редови, по што ќе следи празен ред па уште M редови од истиот формат, кои ќе ги користиме за тестирање.
+Од редот за тестирање треба да ја извадите IP адресата на мрежата и потоа да го одговорите следното прашање со оваа мрежа:
+Од сите N лица на влез, кои што се поврзуваат со истата мрежа (од било кој домаќин во мрежата)
+колку од нив имале доволно буџет за да го купат билетот; и
+од овие, кој од нив платил најголем износ.
+(погледнете го тест примерот!)
+(доколку има повеќе со ист најголем износ тогаш кој е првиот таков во влезот?) (секогаш ќе постои барем еден таков)
+Ова ќе треба да го направите за сите M редови за тестирање!
+
+
+import java.util.*;
+class Person {
+    String ime;
+    String prezime;
+    int budzhet;
+    String ip;
+    int cena;
+    String vreme;
+
+    Person(){
+        ime="";
+        prezime="";
+        budzhet=0;
+        ip="";
+        cena=0;
+        vreme="";
+    }
+    Person(String ime, String prezime, int budzhet, String ip, int cena,String vreme) {
+        this.ime = ime;
+        this.prezime = prezime;
+        this.budzhet = budzhet;
+        this.ip = ip;
+        this.cena = cena;
+        this.vreme=vreme;
+    }
+    String getNetwork(){
+        String []network=ip.split("\\.");
+        return network[0]+"."+network[1]+"."+network[2];
+    }
+}
+
+public class Main {
+    static boolean afterNoon(String line){
+        String []delovi=line.split(":");
+        int h=Integer.parseInt(delovi[0]);
+        int m=Integer.parseInt(delovi[1]);
+        if(h<11 || (h==11 && m<=59)){
+            return false;
+        }
+        return true;
+    }
+    static Person najrano(String n1,String n2,Person eden,Person dva){
+        String prv=n1;
+        String vtor=n2;
+        String []delovi1=n1.split(":");
+        String []delovi2=n2.split(":");
+        int h1=Integer.parseInt(delovi1[0]);
+        int m1=Integer.parseInt(delovi1[1]);
+        int h2=Integer.parseInt(delovi2[0]);
+        int m2=Integer.parseInt(delovi2[1]);
+        if(h1-h2>0){
+            return dva;
+        }
+        else if(h1-h2<0){
+            return eden;
+        }
+        else{
+            if(m1>m2){
+                return dva;
+            }
+            return eden;
+        }
+    }
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        HashMap<String, ArrayList<Person>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            String ime = sc.next();
+            String prezime = sc.next();
+            int budzet = sc.nextInt();
+            String ip = sc.next();
+            String vreme = sc.next();
+            String grad = sc.next();
+            int cena = sc.nextInt();
+            Person p = new Person(ime, prezime, budzet, ip, cena, vreme);
+            String network = p.getNetwork();
+            map.putIfAbsent(network, new ArrayList<>());
+            map.get(network).add(p);
+        }
+        int m = sc.nextInt();
+        for (int i = 0; i < m; i++) {
+            String ime = sc.next();
+            String prezime = sc.next();
+            int budzet = sc.nextInt();
+            String ip = sc.next();
+            String vreme = sc.next();
+            String grad = sc.next();
+            int cena = sc.nextInt();
+            String network = ip.substring(0, ip.lastIndexOf("."));
+            ArrayList<Person> list = map.get(network);
+            int count = 0;
+            int max =0;
+            Person maxP = null;
+            for (Person p : list) {
+                if (p.budzhet >= p.cena) {
+                    count++;
+                    if(maxP==null){
+                        maxP=p;
+                        max=p.cena;
+                    }
+                    else {
+                        if (p.cena >=maxP.cena) {
+                            maxP = p;
+                            max = p.cena;
+                        }
+                    }
+                }
+            }
+            System.out.println("IP network: " + network + " has the following number of users:");
+            System.out.println(count);
+            System.out.println("The user who spent the most from that network is:");
+            System.out.println(
+                    maxP.ime + " " + maxP.prezime +
+                            " with salary " + maxP.budzhet +
+                            " from address " + maxP.ip +
+                            " who spent " + maxP.cena
+            );
+            System.out.println(" ");
+        }
+    }
+}
+
+
+
+
+
+6.Даден ви е речник на зборови на кумановски дијалект и како тие се пишуваат на македонски јазик. Потоа даден ви е текст којшто е напишан на кумановски дијалект. Потребно е да ги замените сите појавувања на зборовите на кумановскиот дијалект кои се дадени во речникот со соодветни зборови на македонски јазик.
+Забелешка: Треба да се игнорираат интерпункциските знаци точка (.) , запирка (,), извичник(!) и прашалник (?). Исто така зборовите во текстот можат да се појават и со прва голема буква и во тој случај неговиот синоним на македонски јазик исто така треба да се отпечати со прва голема буква.
+
+
+import java.util.*;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = Integer.parseInt(sc.nextLine());
+        HashMap<String, String> dict = new HashMap<>();
+
+        for (int i = 0; i < n; i++) {
+            String[] line = sc.nextLine().split(" ");
+            String kuman = line[0].toLowerCase();
+            String maced = line[1];
+            dict.put(kuman, maced);
+        }
+
+        String text = sc.nextLine();
+        String[] words = text.split(" ");
+
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i];
+            String punct = ""; 
+
+            if (word.length() > 0) {
+                char lastChar = word.charAt(word.length() - 1);
+                if (lastChar == '.' || lastChar == ',' || lastChar == '!' || lastChar == '?') {
+                    punct = String.valueOf(lastChar);
+                    word = word.substring(0, word.length() - 1);
+                }
+            }
+
+          
+            boolean firstCapital = Character.isUpperCase(word.charAt(0));
+
+            String wordLower = word.toLowerCase();
+
+            if (dict.containsKey(wordLower)) {
+                word = dict.get(wordLower);
+                if (firstCapital) {
+                    word = Character.toUpperCase(word.charAt(0)) + word.substring(1);
+                }
+            }
+
+            words[i] = word + punct;
+        }
+
+        System.out.println(String.join(" ", words));
+    }
+}
+
+
+
+
+7.Даден е стринг. Треба да се најде најчестиот под-стринг кој е дел од него и да се испечати. Доколку два под-стринга се исто фреквентни, тогаш се печати подолгиот. Доколку и овој услов го исполнуваат тогаш се печати лексикографски помалиот.
+Пример: За стрингот "abc" под-стрингови се "a", "b", "c", "ab", "bc", "abc". Сите имаат иста честота па затоа се печати најдолгиот "abc".
+
+
+import java.util.*;
+public class Main {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        HashMap<String,Integer>map2=new HashMap<>();
+        String line=sc.next();
+        for(int i=0;i<line.length();i++) {
+            for (int j = i + 1; j <= line.length(); j++) {
+                String x = line.substring(i,j);
+                map2.put(x, map2.getOrDefault(x, 0) + 1);
+            }
+        }
+        int max=0;
+        String maxkey="";
+        for(String x: map2.keySet()){
+            int k= map2.get(x);
+            if(k>max){
+                max=k;
+                maxkey=x;
+            }
+            else if(k==max){
+                int prv=x.length();
+                int vtor=maxkey.length();
+                if(prv>vtor){
+                    maxkey=x;
+                }
+                else if(prv==vtor){
+                    char one=x.charAt(0);
+                    char two=maxkey.charAt(0);
+                    if(one<two){
+                        maxkey=x;
+                    }
+                }
+            }
+        }
+        System.out.println(maxkey);
+
+
+    }
+    }
+
+
+
+
+8.Потребно е да се направи проверка на текст даден на англиски, дали е во ред напишан (односно дали правилно се напишани зборовите). За таа цел прво се даваат речник на зборови (односно листа на зборови кои ги содржи англискиот јазик), а потоа се дава текст. Како резултат треба да се испечатат сите зборови кои се направилно напишани или ги нема во речникот.
+Влез: Прво се дава број N на поими кои ќе ги содржи речникот, а во наредните N реда се дадени зборовите кои ги содржи англискиот јазик. Потоа се дава еден текст, кој треба да се провери дали е правилно напишан.
+Излез: Се печати листа на зборови кои се неправилно напишани (секој во посебен ред). Доколку сите зборови се добро напишани се печати: Bravo.
+Забелешка: Треба да се игнорираат интерпункциски знаци како точка (.), запирка (,), извичник (!) и прашалник (?). Исто така да се внимава на голема и мала буква, односно иако зборовите во речникот се со мали букви, во реченица може да појават со голема почетна буква и притоа се сметаат за точни. Работете со хеш табела со отворени кофички. Сами треба да го одредите бројот на кофички и хеш функцијата.
+
+
+import java.util.*;
+public class Main{
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();
+        sc.nextLine(); 
+        
+        HashSet<String> dic = new HashSet<>();
+        for(int i = 0; i < n; i++){
+            String word = sc.nextLine().toLowerCase();
+            dic.add(word);
+        }
+        
+        String text = sc.nextLine().toLowerCase();
+        text = text.replaceAll("[.,!?]", ""); 
+        String[] words = text.split("\\s+"); 
+        
+        ArrayList<String> wrongWords = new ArrayList<>();
+        for(String w : words){
+            if(!w.isEmpty()&&!dic.contains(w)){
+                wrongWords.add(w);
+            }
+        }
+        
+        if(wrongWords.isEmpty()){
+            System.out.println("Bravo");
+        } else {
+            for(String w : wrongWords){
+                System.out.println(w);
+            }
+        }
+    }
+}
+
